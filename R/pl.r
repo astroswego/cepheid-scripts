@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 library(optparse)
+library(scatterplot3d)
 
 get_options <- function() {
     option_list <- list(
@@ -63,18 +64,27 @@ formula_string <- function(ystr, ...) {
     paste(ystr, rhs, sep = " ~ ")
 }
 
-do_fit <- function(outdir, fname, data, ystr, ...) {
+do_fit <- function(outdir, fname, data, params, ystr, ...) {
     # formula from string representation of equation
     eqn <- as.formula(formula_string(ystr, ...))
 
     model <- lm(eqn)
     print(summary(model))
 
+    # 2D plot
     fpath <- file.path(outdir, fname)
     png(fpath)
     plot(data$logP, data$mag)
-    lines(data$logP, model$fitted.values, col="red")
+    points(data$logP, model$fitted.values, col="red")
     dev.off()
+    if (length(params) == 2) {
+        # 3D plot
+        fpath3d <- file.path(outdir, paste("3D", fname, sep = "-"))
+        png(fpath3d)
+        s3d <- scatterplot3d(data$logP, params[[2]], data$mag)
+        s3d$plane3d(model)
+        dev.off()
+    }
 }
 
 do_fits <- function(outdir, datastr, data, tag) {
@@ -85,16 +95,17 @@ do_fits <- function(outdir, datastr, data, tag) {
     
     do_fit(outdir,
            paste("PL-", tag, ".png", sep = ""),
-           data, magstr, logPstr)
+           data, list(data$logP), magstr, logPstr)
     do_fit(outdir,
            paste("PLPC1-", tag, ".png", sep = ""),
-           data, magstr, logPstr, PC1str)
+           data, list(data$logP, data$PC1), magstr, logPstr, PC1str)
     do_fit(outdir,
            paste("PLPC2-", tag, ".png", sep = ""),
-           data, magstr, logPstr, PC2str)
+           data, list(data$logP, data$PC2), magstr, logPstr, PC2str)
     do_fit(outdir,
            paste("PLPC12-", tag, ".png", sep = ""),
-           data, magstr, logPstr, PC1str, PC2str)
+           data, list(data$logP, data$PC1, data$PC2),
+           magstr, logPstr, PC1str, PC2str)
 }
 
 
