@@ -45,16 +45,24 @@ split_period <- function(data, split = 1.0) {
 }
 
 correct_extinction <- function(data, use_zeroes = TRUE, average = 0.0) {
-    if (use_zeroes) {
+    if (use_zeroes)
         data$ext[data$ext == 0.0] <- average
-    }
-    else {
+    else
         data <- data[data$ext != 0.0,]
-    }
     
     data$mag <- data$mag - data$ext
 
     data
+}
+
+linear_combination <- function(y, ...) {
+    # initialize the formula
+    f <- y ~ 1
+    # iteratively add each dependent variable to the formula
+    for (x in list(...))
+        f <- update(f, . ~ . + `x`)
+
+    f
 }
 
 formula_string <- function(ystr, ...) {
