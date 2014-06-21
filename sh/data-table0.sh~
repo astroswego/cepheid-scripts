@@ -1,0 +1,17 @@
+#!/bin/bash
+# Takes 
+
+if [ $# -ne 5 ]; then
+    echo "\
+Usage: data-table0 [existing table] [I-band table] [I-band PCs]
+                                    [V-band table] [V-band PCs]"
+else
+    table  = $1
+    tableI = $2
+    PCI    = $3
+    tableV = $4
+    PCV    = $5
+    sed 's/^\([^ 	]*\).[^ 	]*\(.*\)/\1\2/g/' tableI
+
+#  echo "Work in progress"
+fi
