@@ -46,8 +46,11 @@ then
 	datacols=$(head -n 1 $datafile | wc -w)
 	# copy output file to input file so that it can be used for output
 	cp $outfile $infile
-	# extract names from namefile, removing any file extensions
-	sed "s/[.[:blank:]].*//" $namefile |
+
+	# remove leading whitespace from namefile
+	sed "s/^[[:blank:]]*//" $namefile |
+	# now extract names, removing any file extensions
+	sed "s/[.[:blank:]].*//" |
 	# paste names with their data
 	paste - $datafile |
 	join $infile - > $outfile
