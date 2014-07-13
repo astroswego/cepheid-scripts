@@ -14,12 +14,12 @@ then
     # make temporary files for storing intermediate results
     infile=$(mktemp)
     outfile=$(mktemp)
-
+    
     cp $origfile $outfile
     # remove heading from original file
 #    tail -n +2 $origfile > $outfile
     # count number of columns in original file
-    origcols=$(head -n 2 $origfile | tail -n 1 | wc -w)
+    origcols=$(head -n 1 $origfile | wc -w)
     # highest column that has been altered
     highestcol=0
     # amount of extra columns added so far
@@ -30,9 +30,9 @@ then
     # star names, and the third is the first column to insert the data at
     for (( i = 3; i <= $#; i += 3 ))
     do
-        eval "namefile=\$$i
-              datafile=\$$((i+1))
-              tablecol=\$$((i+2))"
+        eval "inputfile=\$$i
+              replacecol=\$$((i+1))
+              replacecount=\$$((i+2))"
 	if [ $tablecol -le $highestcol ]
 	then
 	    echo "Arguments must be given in ascending order."

@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""col2row
+
+Plots one column from each of the files in a given directory which end with
+the given extension to stdout as rows.
+"""
+from os import path, listdir
+from sys import stdout
+from argparse import ArgumentParser
+from numpy import loadtxt, savetxt
+
+def get_args():
+    parser = ArgumentParser()
+
+    parser.add_argument('-i', '--input', type=str,
+        help='Input directory')
+    parser.add_argument('-e', '--extension', type=str,
+        help='Extension on filenames to use')
+    parser.add_argument('-c', '--column', type=int, default=1,
+        help='Column (indexed from 0) in files to print to stdout')
+    parser.add_argument('-s', '--sep', type=str, default=None,
+        help='Separator used in input files')
+
+    return parser.parse_args()
+
+def main():
+    args = get_args()
+
+    usecols = (args.column,)
+    extension_length = len(args.extension)
+
+    filenames = sorted(listdir(args.input))
+    for fname in filenames:
+        basename = path.basename(fname)
+        if basename.endswith(args.extension):
+            name = basename[:-extension_length]
+            row = loadtxt(fname, usecols=usecols)
+            print(name, ' '.join(row))
+
+if __name__ == '__main__':
+    exit(main())
